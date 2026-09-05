@@ -541,7 +541,7 @@ export default function ProjectDNA({
                   "
                 >
                   <Sparkles size={12} />
-                  {badge}
+                  {typeof badge === 'string' ? badge : badge?.name || 'Achievement'}
                 </motion.span>
               ))}
             </div>
