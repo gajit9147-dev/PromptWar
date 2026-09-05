@@ -5,10 +5,8 @@
  * and Adaptive Mentor Loop.
  */
 
-const rawApiUrl = import.meta.env.VITE_API_URL || "";
-const API_BASE = rawApiUrl
-  ? (rawApiUrl.endsWith("/api") ? rawApiUrl : `${rawApiUrl.replace(/\/$/, "")}/api`)
-  : "/api";
+const API_BASE =
+  import.meta.env.VITE_API_URL || "https://promptwar-lykf.onrender.com/api";
 
 /**
  * Safely parse an API response.
