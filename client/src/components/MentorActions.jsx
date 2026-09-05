@@ -11,6 +11,9 @@ import {
   ArrowRight,
   Loader2,
   CheckCircle2,
+  Zap,
+  Clock3,
+  Bot,
 } from 'lucide-react';
 
 const PERSONA_CONFIG = {
@@ -52,15 +55,60 @@ const PERSONA_CONFIG = {
   },
 };
 
+const ADAPTATION_ACTIONS = [
+  {
+    id: 'innovative',
+    label: 'Make it Innovative',
+    description: 'Push differentiation without breaking feasibility.',
+    icon: Lightbulb,
+    accent: 'text-amber-300',
+    bg: 'bg-amber-400/[0.06]',
+    border: 'border-amber-400/15',
+  },
+  {
+    id: 'simplify',
+    label: 'Simplify',
+    description: 'Reduce scope and focus the MVP.',
+    icon: Zap,
+    accent: 'text-cyan-300',
+    bg: 'bg-cyan-400/[0.06]',
+    border: 'border-cyan-400/15',
+  },
+  {
+    id: 'timeline',
+    label: 'Fit My Timeline',
+    description: 'Reshape the build around your deadline.',
+    icon: Clock3,
+    accent: 'text-violet-300',
+    bg: 'bg-violet-400/[0.06]',
+    border: 'border-violet-400/15',
+  },
+  {
+    id: 'add-ai',
+    label: 'Add AI',
+    description: 'Identify meaningful AI opportunities.',
+    icon: Bot,
+    accent: 'text-sky-300',
+    bg: 'bg-sky-400/[0.06]',
+    border: 'border-sky-400/15',
+  },
+  {
+    id: 'industry-ready',
+    label: 'Make Industry Ready',
+    description: 'Improve production readiness and portfolio value.',
+    icon: Rocket,
+    accent: 'text-emerald-300',
+    bg: 'bg-emerald-400/[0.06]',
+    border: 'border-emerald-400/15',
+  },
+];
+
 function getPersonaConfig(mentor = {}) {
   const raw = `${mentor.id || ''} ${mentor.role || ''} ${
     mentor.name || ''
   }`.toLowerCase();
 
-  if (
-    raw.includes('innovation') ||
-    raw.includes('creative')
-  ) {
+  if (raw.includes('innovation') || raw.includes('creative')) {
     return PERSONA_CONFIG.innovation;
   }
 
@@ -113,7 +161,9 @@ function getFeedbackText(feedback) {
     feedback.advice ||
     feedback.content ||
     feedback.response?.directAnswer ||
-    (feedback.response?.actionableSteps ? feedback.response.actionableSteps.join('\n') : '') ||
+    (feedback.response?.actionableSteps
+      ? feedback.response.actionableSteps.join('\n')
+      : '') ||
     ''
   );
 }
@@ -122,6 +172,7 @@ export default function MentorActions({
   mentors = [],
   activeFeedback = null,
   onRequestGuidance = () => {},
+  onAdaptProject = () => {},
   loading = false,
 }) {
   const feedbackText = getFeedbackText(activeFeedback);
@@ -132,33 +183,33 @@ export default function MentorActions({
     activeFeedback?.mentorType ||
     null;
 
+  const handleAdapt = async (action) => {
+    try {
+      await onAdaptProject(action);
+    } catch {
+      // Parent hook owns the error state.
+    }
+  };
+
   return (
     <section
       className="
         relative overflow-hidden
-        rounded-3xl
-        border border-white/10
-        bg-white/[0.025]
-        p-5 sm:p-6
+        rounded-3xl border border-white/10
+        bg-white/[0.025] p-5 sm:p-6
         backdrop-blur-xl
       "
     >
-      {/* Ambient glow */}
       <div className="pointer-events-none absolute -right-24 -top-24 h-64 w-64 rounded-full bg-violet-500/[0.08] blur-3xl" />
 
       <div className="relative">
-        {/* =====================================================
-            HEADER
-        ====================================================== */}
+        {/* Header */}
         <div className="flex items-start gap-3">
           <div
             className="
-              flex h-11 w-11 shrink-0
-              items-center justify-center
-              rounded-2xl
-              border border-violet-400/20
-              bg-violet-400/[0.08]
-              text-violet-300
+              flex h-11 w-11 shrink-0 items-center justify-center
+              rounded-2xl border border-violet-400/20
+              bg-violet-400/[0.08] text-violet-300
             "
           >
             <BrainCircuit size={21} />
@@ -173,12 +224,10 @@ export default function MentorActions({
               <span
                 className="
                   inline-flex items-center gap-1
-                  rounded-full
-                  border border-violet-400/15
+                  rounded-full border border-violet-400/15
                   bg-violet-400/[0.06]
-                  px-2 py-1
-                  text-[9px] font-semibold uppercase
-                  tracking-wider text-violet-300
+                  px-2 py-1 text-[9px] font-semibold
+                  uppercase tracking-wider text-violet-300
                 "
               >
                 <Sparkles size={9} />
@@ -187,20 +236,101 @@ export default function MentorActions({
             </div>
 
             <p className="mt-1 text-xs leading-5 text-slate-500">
-              Pressure-test the project from different expert
-              perspectives before you build it.
+              Pressure-test your idea, then reshape the project without
+              starting from scratch.
             </p>
           </div>
         </div>
 
-        {/* =====================================================
-            MENTOR CARDS
-        ====================================================== */}
-        {mentors.length > 0 ? (
-          <div className="mt-6 space-y-3">
-            <div className="flex items-center justify-between">
+        {/* Adaptive actions */}
+        <div className="mt-6">
+          <div className="mb-3 flex items-center justify-between">
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-cyan-400/70">
+                Adaptive project actions
+              </p>
+              <p className="mt-1 text-xs text-slate-600">
+                Change the strategy. Keep the project context.
+              </p>
+            </div>
+
+            <span className="hidden text-[10px] font-mono text-slate-700 sm:block">
+              AI LOOP
+            </span>
+          </div>
+
+          <div className="grid gap-2 sm:grid-cols-2">
+            {ADAPTATION_ACTIONS.map((action, index) => {
+              const Icon = action.icon;
+
+              return (
+                <motion.button
+                  key={action.id}
+                  type="button"
+                  disabled={loading}
+                  onClick={() => handleAdapt(action.id)}
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{
+                    delay: index * 0.04,
+                    duration: 0.25,
+                  }}
+                  className="
+                    group relative flex w-full items-center gap-3
+                    rounded-2xl border border-white/8
+                    bg-white/[0.02] p-3 text-left
+                    transition-all duration-200
+                    hover:border-violet-400/20
+                    hover:bg-white/[0.045]
+                    focus:outline-none
+                    focus:ring-2 focus:ring-violet-400/40
+                    disabled:cursor-not-allowed
+                    disabled:opacity-50
+                  "
+                >
+                  <div
+                    className={`
+                      flex h-9 w-9 shrink-0 items-center justify-center
+                      rounded-xl ${action.bg} ${action.accent}
+                    `}
+                  >
+                    {loading ? (
+                      <Loader2 size={16} className="animate-spin" />
+                    ) : (
+                      <Icon size={16} />
+                    )}
+                  </div>
+
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs font-semibold text-slate-200">
+                      {action.label}
+                    </p>
+                    <p className="mt-0.5 text-[10px] leading-4 text-slate-600">
+                      {action.description}
+                    </p>
+                  </div>
+
+                  <ArrowRight
+                    size={14}
+                    className="
+                      shrink-0 text-slate-700
+                      transition-all
+                      group-hover:translate-x-0.5
+                      group-hover:text-violet-300
+                    "
+                  />
+                </motion.button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Mentor personas */}
+        {mentors.length > 0 && (
+          <div className="mt-7 border-t border-white/6 pt-6">
+            <div className="mb-3 flex items-center justify-between">
               <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-600">
-                Choose a perspective
+                Expert perspectives
               </p>
 
               <span className="text-[10px] font-mono text-slate-700">
@@ -212,40 +342,26 @@ export default function MentorActions({
               {mentors.map((mentor, index) => {
                 const config = getPersonaConfig(mentor);
                 const Icon = config.icon;
-
-                const isActive =
-                  activeMentorId === mentor.id;
-
-                const isLoading =
-                  loading && isActive;
+                const isActive = activeMentorId === mentor.id;
+                const isLoading = loading && isActive;
 
                 return (
                   <motion.button
                     key={mentor.id || index}
                     type="button"
                     disabled={loading}
-                    onClick={() =>
-                      onRequestGuidance(mentor.id)
-                    }
-                    initial={{
-                      opacity: 0,
-                      y: 8,
-                    }}
-                    animate={{
-                      opacity: 1,
-                      y: 0,
-                    }}
+                    onClick={() => onRequestGuidance(mentor.id)}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
                     transition={{
                       delay: index * 0.06,
                       duration: 0.3,
                     }}
                     className={`
                       group relative w-full overflow-hidden
-                      rounded-2xl border
-                      p-4 text-left
+                      rounded-2xl border p-4 text-left
                       transition-all duration-200
-                      focus:outline-none
-                      focus:ring-2
+                      focus:outline-none focus:ring-2
                       focus:ring-violet-400/40
                       disabled:cursor-not-allowed
                       disabled:opacity-60
@@ -263,11 +379,9 @@ export default function MentorActions({
                     <div className="flex items-start gap-3">
                       <div
                         className={`
-                          flex h-10 w-10 shrink-0
-                          items-center justify-center
-                          rounded-xl
-                          ${config.bg}
-                          ${config.accent}
+                          flex h-10 w-10 shrink-0 items-center
+                          justify-center rounded-xl
+                          ${config.bg} ${config.accent}
                         `}
                       >
                         {mentor.avatar ? (
@@ -283,23 +397,24 @@ export default function MentorActions({
                         <div className="flex items-start justify-between gap-2">
                           <div>
                             <h4 className="text-sm font-bold text-white">
-                              {mentor.name ||
-                                'AI Mentor'}
+                              {mentor.name || 'AI Mentor'}
                             </h4>
 
                             <p
-                              className={`mt-0.5 text-[10px] font-semibold uppercase tracking-wider ${config.accent}`}
+                              className={`
+                                mt-0.5 text-[10px] font-semibold
+                                uppercase tracking-wider
+                                ${config.accent}
+                              `}
                             >
-                              {mentor.role ||
-                                config.label}
+                              {mentor.role || config.label}
                             </p>
                           </div>
 
                           <ArrowRight
                             size={15}
                             className="
-                              shrink-0
-                              text-slate-600
+                              shrink-0 text-slate-600
                               transition-all
                               group-hover:translate-x-0.5
                               group-hover:text-violet-300
@@ -352,33 +467,9 @@ export default function MentorActions({
               })}
             </div>
           </div>
-        ) : (
-          <div
-            className="
-              mt-6 rounded-2xl
-              border border-dashed border-white/10
-              bg-white/[0.015]
-              p-6 text-center
-            "
-          >
-            <BrainCircuit
-              size={24}
-              className="mx-auto text-slate-700"
-            />
-
-            <p className="mt-3 text-sm font-medium text-slate-400">
-              Mentor council is preparing
-            </p>
-
-            <p className="mt-1 text-xs text-slate-600">
-              AI mentor personas will appear here.
-            </p>
-          </div>
         )}
 
-        {/* =====================================================
-            ACTIVE FEEDBACK
-        ====================================================== */}
+        {/* Active feedback */}
         <AnimatePresence mode="wait">
           {activeFeedback && feedbackText && (
             <motion.div
@@ -387,39 +478,25 @@ export default function MentorActions({
                 activeFeedback.mentorId ||
                 feedbackText.slice(0, 30)
               }
-              initial={{
-                opacity: 0,
-                height: 0,
-                y: 8,
-              }}
-              animate={{
-                opacity: 1,
-                height: 'auto',
-                y: 0,
-              }}
-              exit={{
-                opacity: 0,
-                height: 0,
-              }}
+              initial={{ opacity: 0, height: 0, y: 8 }}
+              animate={{ opacity: 1, height: 'auto', y: 0 }}
+              exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.3 }}
               className="overflow-hidden"
             >
               <div
                 className="
-                  mt-5 rounded-2xl
-                  border border-violet-400/15
-                  bg-violet-400/[0.045]
-                  p-5
+                  mt-5 rounded-2xl border
+                  border-violet-400/15
+                  bg-violet-400/[0.045] p-5
                 "
               >
                 <div className="flex items-start gap-3">
                   <div
                     className="
-                      flex h-9 w-9 shrink-0
-                      items-center justify-center
-                      rounded-xl
-                      bg-violet-400/10
-                      text-violet-300
+                      flex h-9 w-9 shrink-0 items-center
+                      justify-center rounded-xl
+                      bg-violet-400/10 text-violet-300
                     "
                   >
                     <MessageSquareText size={17} />
@@ -433,7 +510,14 @@ export default function MentorActions({
                           'Mentor insight'}
                       </h4>
 
-                      <span className="rounded-full bg-emerald-400/[0.08] px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-emerald-300">
+                      <span
+                        className="
+                          rounded-full bg-emerald-400/[0.08]
+                          px-2 py-0.5 text-[9px]
+                          font-semibold uppercase tracking-wider
+                          text-emerald-300
+                        "
+                      >
                         AI analysis
                       </span>
                     </div>
@@ -453,25 +537,16 @@ export default function MentorActions({
           )}
         </AnimatePresence>
 
-        {/* =====================================================
-            FOOTER
-        ====================================================== */}
-        <div
-          className="
-            mt-5 flex items-start gap-2
-            border-t border-white/6
-            pt-4
-          "
-        >
+        {/* Footer */}
+        <div className="mt-5 flex items-start gap-2 border-t border-white/6 pt-4">
           <ShieldAlert
             size={13}
             className="mt-0.5 shrink-0 text-slate-600"
           />
 
           <p className="text-[10px] leading-4 text-slate-600">
-            Mentor feedback is generated from your current
-            project context. Use it to refine scope, risks,
-            differentiation, and execution decisions.
+            AI mentor feedback and adaptations use your current project
+            context. Review generated changes before implementation.
           </p>
         </div>
       </div>

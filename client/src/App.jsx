@@ -21,6 +21,7 @@ export default function App() {
     aiLoading,
     error,
     generateProject,
+    adaptProject,
     fetchMentors,
     consultMentor,
     rescoreProject,
@@ -52,7 +53,7 @@ export default function App() {
     <div className="min-h-screen bg-[#050813] text-slate-200 flex flex-col">
       {/* Global Navigation Header */}
       <header className="border-b border-white/5 bg-[#050813]/80 backdrop-blur-xl sticky top-0 z-50">
-        <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+        <div className="w-full max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-12 2xl:px-16 h-16 flex items-center justify-between">
           <div
             onClick={() => setActiveView('home')}
             className="flex items-center gap-2 cursor-pointer"
@@ -80,7 +81,7 @@ export default function App() {
       </header>
 
       {/* Main Content Viewport */}
-      <main className="flex-1 max-w-6xl w-full mx-auto px-4">
+      <main className="flex-1 w-full max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-12 2xl:px-16">
         {error && (
           <div className="my-4 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-mono">
             Error: {error}
@@ -109,6 +110,7 @@ export default function App() {
             aiLoading={aiLoading}
             onScoreProject={rescoreProject}
             onConsultMentor={consultMentor}
+            onAdaptProject={adaptProject}
             onBack={() => setActiveView('home')}
           />
         )}

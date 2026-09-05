@@ -97,6 +97,16 @@ export const api = {
     return handleResponse(res);
   },
 
+  async adaptProject(payload) {
+    const res = await fetch(`${API_BASE}/projects/adapt`, {
+      method: "POST",
+      headers: jsonHeaders,
+      body: JSON.stringify(payload),
+    });
+
+    return handleResponse(res);
+  },
+
   async getProjects() {
     const res = await fetch(`${API_BASE}/projects`);
 

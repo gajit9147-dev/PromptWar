@@ -12,6 +12,13 @@ router.get('/leaderboard', projectController.getLeaderboard);
 // Create new project
 router.post('/', aiLimiter, createProjectRules, validate, projectController.createProject);
 
+// Adaptive mentor project actions
+router.post(
+  '/adapt',
+  aiLimiter,
+  projectController.adaptProject
+);
+
 // Single project operations
 router.get('/:id', projectController.getProjectById);
 router.post('/:id/score', aiLimiter, scoreProjectRules, validate, projectController.scoreProject);
