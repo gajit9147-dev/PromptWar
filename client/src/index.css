@@ -19,10 +19,8 @@
   --color-border-glow: rgba(0, 242, 254, 0.25);
 }
 
-* {
+*, ::before, ::after {
   box-sizing: border-box;
-  margin: 0;
-  padding: 0;
 }
 
 html {
