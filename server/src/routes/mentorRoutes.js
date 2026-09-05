@@ -13,5 +13,6 @@ router.post('/feedback', aiLimiter, mentorFeedbackRules, validate, mentorControl
 
 // Direct consultation with a specific mentor persona
 router.post('/:mentorType/chat', aiLimiter, mentorController.askMentorQuestion);
+router.post('/:mentorType/ask', aiLimiter, mentorController.askMentorQuestion);
 
 module.exports = router;
